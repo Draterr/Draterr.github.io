@@ -1,0 +1,179 @@
+# Zipping(HTB)
+
+![Untitled](/assets/images/zipping/25.png)
+
+## NMAP
+
+```bash
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 9.0p1 Ubuntu 1ubuntu7.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 9d:6e:ec:02:2d:0f:6a:38:60:c6:aa:ac:1e:e0:c2:84 (ECDSA)
+|_  256 eb:95:11:c7:a6:fa:ad:74:ab:a2:c5:f6:a4:02:18:41 (ED25519)
+80/tcp open  http    Apache httpd 2.4.54 ((Ubuntu))
+|_http-server-header: Apache/2.4.54 (Ubuntu)
+|_http-title: Zipping | Watch store
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+```
+
+## Recon
+
+If we go to the website we are greeted by this page.
+
+![Untitled](/assets/images/zipping/1.png)
+
+We find that only the shop and Work with Us Page actually go somewhere
+
+### Work with Us Page
+
+![Untitled](/assets/images/zipping/2.png)
+
+### Shop Page
+
+![Untitled](/assets/images/zipping/3.png)
+
+First thing I did was tried messing with the upload function at the Work with Us page. After playing with the upload function I enumerated a few things. First of all It only allowed for zip files containing a pdf within it Secondly It only allowed 1 file to be uploaded including within the zip. Logically I googled ZIP file upload vulnerabilities on google and found a hacktricks page about file upload tricks. 
+
+[https://book.hacktricks.xyz/pentesting-web/file-upload#zip-tar-file-automatically-decompressed-upload](https://book.hacktricks.xyz/pentesting-web/file-upload#zip-tar-file-automatically-decompressed-upload)
+
+In the hacktricks page I found a section talking about zip symlink. 
+
+> A symlink AKA symbolic link is a type of file in linux that points to another file or a folder on your system. It is similar to shortcuts in windows.
+> 
+
+> [https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/](https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/)
+> 
+
+## Hacking
+
+So how can we exploit this? First we create a pdf file that has a symlink to whatever file we are trying to access on the server. I wrote a script to automate this process as creating a pdf file and zipping it everytime is very time consuming.
+
+```bash
+#!/bin/bash
+ln -s ../../..$1 exploit.pdf
+zip --symlinks exploit.zip exploit.pdf
+```
+
+We create a pdf file with a symlink to $1 which is our argument to the script, similar to how sys.argv works in python.  Then we zip the file with the - - symlinks flag to store the symlink to the zip file.
+
+Now  that we are equipped with our payload we can upload it to the server.
+
+![Untitled](/assets/images/zipping/4.png)
+
+Our files gets uploaded to the  uploads/md5sum(filename)/filename.pdf location. If we go to the link we get greeted by an empty PDF.
+
+![Untitled](/assets/images/zipping/5.png)
+
+If we download the PDF and cat it we will get the content of the file we created a symlink to. In this case we created a symlink to the file /etc/passwd so we will get the contents of the /etc/passwd file.
+
+![Untitled](/assets/images/zipping/6.png)
+
+After reaching this point I started enumerating around the box to look for leaked credentials/ conf files/source codes etc. But ultimately I didn’t find anything that allowed me to escalate into user. After failing to progress on the box after 2 days I gave up on the box. It wasn’t until a month later that I decided that I should proceed with the box instead of just sitting on it . So I asked for a nudge in the HTB discord and got some help. I was pointed to the direction of reading the source code to look for other vulnerabilities that are still present on the website. Equipped with this newly acquired knowledge, I started digging into the source code. After reading the source code I found some interesting code.
+
+### Local File Inclusion
+
+![Untitled](/assets/images/zipping/7.png)
+
+I stumbled upon the index.php page for the /shop directory and noticed the include function being used to include a file with the name $page*(the $page variable)* and appending the “.php” extension to it.  Right away I thought of trying for LFI, so I went to the /shop/index.php page and captured a simple GET request.
+
+![Untitled](/assets/images/zipping/8.png)
+
+Seems like its trying to include the products.php page. Since we know that in the main app there is also a index.php file lets try hitting that file.
+
+> After enumerating the box with the symlink vulnerability I figured out roughly how the file system is laid out. I know that the /shop directory resides in /var/www/html/shop so by going up a directory and hitting /var/www/html/shop/../index.php instead we get the index.php of the main website
+> 
+
+![Untitled](/assets/images/zipping/9.png)
+
+There we go! We get the index.php file for the main website. This proves our theory of the include function being vulnerable. But we already have a way of getting any file we want on the box so what can we do with the LFI? Well while digging through the source code I also found a SQL injection.
+
+![Untitled](/assets/images/zipping/10.png)
+
+We see some comments that were left by the developers. *“Prepare statement and execute, but does not prevent SQL injection”.* OK so we have a SQL injection but there is one caveat.The SQL statement is behind a preg_match function. So in order to get the SQL injection we would need to bypass the preg_match. A quick google search showed another hacktricks page that showed a technique to bypass preg_match.
+
+![Untitled](/assets/images/zipping/11.png)
+
+According to hacktricks, preg_match only check the first line of the user input if we send several lines. So if we send a request like 
+
+test\n;’”
+
+or
+
+test
+
+‘;”
+
+the special characters in the second line doesn’t actually get matched.
+
+ok so lets put this to the test.
+
+![%0A = \n (url encoded)](/assets/images/zipping/12.png)
+
+%0A = \n (url encoded)
+
+Alright we didn’t get redirected to index.php which means we were able to bypass the preg_match check. Now lets exploit the SQL injection. Since we know that our user input is in a WHERE clause
+
+![Untitled](/assets/images/zipping/13.png)
+
+So this is gonna be a UNION SQL injection.
+
+First thing to do with a UNION SQL injection is to find the number of columns.
+
+![Untitled](/assets/images/zipping/14.png)
+
+OK so 8 columns are in the previous SELECT statement. Enumerating the database shows that there isn’t anything interesting in the database. But what we can do is chain this SQL injection with the LFI.  **First we are gonna write a webshell to a file with the SQL injection that include that php file with the LFI.**
+
+![Untitled](/assets/images/zipping/15.png)
+
+> INTO OUTFILE SQL statement has to be at the end of a SELECT statement. That’s why the payload only works on the last column.
+> 
+
+![Untitled](/assets/images/zipping/16.png)
+
+We write a php webshell to /dev/shm/. Now we include it with the LFI.
+
+![Untitled](/assets/images/zipping/17.png)
+
+Alright so now that we have a reverse shell on the box. We do the usual priv esc enumeration. 
+
+Sudo -l shows some promising output.
+
+![Untitled](/assets/images/zipping/18.png)
+
+Running the binary it asks for a password.
+
+![Untitled](/assets/images/zipping/19.png)
+
+Running strings on the binray leaks the password
+
+![St0ckM4nager is the password](/assets/images/zipping/20.png)
+
+St0ckM4nager is the password
+
+Playing with the binary there isn’t any obvious way of exploiting it. After trying to exploit it for 6hrs I decided to ask someone for help. Turns out if you run **strace** on the binary you can find the system call that it is making. Turns out this binary is vulnerable to **shared object hijacking**.
+
+![Untitled](/assets/images/zipping/21.png)
+
+We can see that the binary makes a system call to a shared library in /home/rektsu/.config/libcounter.so a directory that we have read write access to.
+
+> A shared library or shared object is **a file that is intended to be shared by multiple programs**. Symbols used by a program are loaded from shared libraries into memory at load time or runtime.
+> 
+
+At the time of doing the box I had no idea what **shared object hijacking** was. So I bought the privilege escalation course on HTB academy and learned about it.
+
+> [https://academy.hackthebox.com/module/51/section/476](https://academy.hackthebox.com/module/51/section/476)
+> 
+
+Basically the program tries to call the shared library to use the code in it but the shared library is at a directory which we can control. So if we replace the shared library with our own .so file we can make the program execute whatever code we want.
+
+First lets create a C file that basically starts a shell
+
+![Untitled](/assets/images/zipping/22.png)
+
+Then we compile it into a shared object file to be called by the stock program
+
+![Untitled](/assets/images/zipping/23.png)
+
+Now we just have to get this file on the box at /home/rektsu/.config/ and run the program with sudo and we will be root.
+
+![Untitled](/assets/images/zipping/24.png)
