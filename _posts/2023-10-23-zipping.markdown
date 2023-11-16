@@ -121,7 +121,7 @@ First thing to do with a UNION SQL injection is to find the number of columns.
 
 ![Untitled](/assets/images/zipping/14.png)
 
-OK so 8 columns are in the previous SELECT statement. Enumerating the database shows that there isn’t anything interesting in the database. But what we can do is chain this SQL injection with the LFI.  **First we are gonna write a webshell to a file with the SQL injection that include that php file with the LFI.**
+OK so 8 columns are in the previous SELECT statement. Enumerating the database shows that there isn’t anything interesting in the database. But what we can do is chain this SQL injection with the LFI.  **First we are gonna write a webshell to a file with the SQL injection then include that php file with the LFI.**
 
 ![Untitled](/assets/images/zipping/15.png)
 
