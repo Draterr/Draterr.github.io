@@ -44,7 +44,7 @@ In the hacktricks page I found a section talking about zip symlink.
 > [https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/](https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/)
 > 
 
-## Hacking
+## Exploiting 
 
 So how can we exploit this? First we create a pdf file that has a symlink to whatever file we are trying to access on the server. I wrote a script to automate this process as creating a pdf file and zipping it everytime is very time consuming.
 
