@@ -44,12 +44,12 @@ We get greeted by this page when we navigate to codify.htb (both port 80 and 300
 > Codify is a simple web application that allows you to test your Node.js code easily. With Codify, you can write and run your code snippets in the browser without the need for any setup or installation.
 > 
 
-From the description of the site my initial guess was that this would be a RCE through node js . Coincidentally I had read about a RCE via node js template area so I started exploring with that assumption in mind.
+From the description of the site my initial guess was that this would be a RCE through node js . Coincidentally I had read about a RCE via node js template area at that time so I started exploring the website with that in mind.
 
 > RCE via node js template area[https://twitter.com/ynsmroztas/status/1717905620001521773](https://twitter.com/ynsmroztas/status/1717905620001521773)
 > 
 
-However we see that from the description the code that we run are in a sandboxed environment.
+However we see that from the description the code that are ran are in a sandboxed environment.
 
 > codify uses sandboxing technology to run your code. This means that your code is executed in a safe and secure environment, without any access to the underlying system. Therefore this has some limitations. We try our best to reduce these so that we can give you a better experience.
 > 
@@ -95,7 +95,7 @@ Looking at the /var/www directory we find 3 directories
 - editor
 - contact
 
-The html directory is nothing of interest and the editor directory is the website we just exploited. Howver, the contact site is a different website that has a db file that would be of interest to us. Looking at the index.js 
+The html directory is nothing of interest and the editor directory is the website we just exploited. However, the contact site is a different website that has a db file that would be of interest to us. Looking at the index.js 
 
 ![Untitled](/assets/images/codify/10.png)
 
@@ -137,8 +137,39 @@ Running sudo -l as joshua shows that we can run a [mysql-backup.sh](http://mysql
 The script looks like this.
 
 ![Untitled](/assets/images/codify/18.png)
+```bash
+#!/bin/bash
+DB_USER="root"
+DB_PASS=$(/usr/bin/cat /root/.creds)
+BACKUP_DIR="/var/backups/mysql"
 
-This is a simple bash script that if the correct password is provided will backup all the databases in mysql to the /var/backups/mysql. When I was doing the box I actually struggled a lot with exploiting this script. I couldn’t quite figure out what I had to do . I ended up resorting to looking at the HTB official forum for some hints. After reading the comments I learnt that some special characters would make the application do something unexpected. Thus I wrote a python script to try bruteforcing special characters.
+read -s -p "Enter MySQL password for $DB_USER: " USER_PASS
+/usr/bin/echo
+
+if [[ $DB_PASS == $USER_PASS ]]; then
+        /usr/bin/echo "Password confirmed!"
+else
+        /usr/bin/echo "Password confirmation failed!"
+        exit 1
+fi
+
+/usr/bin/mkdir -p "$BACKUP_DIR"
+
+databases=$(/usr/bin/mysql -u "$DB_USER" -h 0.0.0.0 -P 3306 -p"$DB_PASS" -e "SHOW DATABASES;" | /usr/bin/grep -Ev "(Database|information_schema|performance_schema)")
+
+for db in $databases; do
+    /usr/bin/echo "Backing up database: $db"
+    /usr/bin/mysqldump --force -u "$DB_USER" -h 0.0.0.0 -P 3306 -p"$DB_PASS" "$db" | /usr/bin/gzip > "$BACKUP_DIR/$db.sql.gz"
+done
+
+/usr/bin/echo "All databases backed up successfully!"
+/usr/bin/echo "Changing the permissions"
+/usr/bin/chown root:sys-adm "$BACKUP_DIR"
+/usr/bin/chmod 774 -R "$BACKUP_DIR"
+/usr/bin/echo 'Done!'
+```
+
+This is a simple bash script that if the correct password is provided will backup all the databases in mysql to the /var/backups/mysql directory. When I was doing the box I actually struggled a lot with exploiting this script. I couldn’t quite figure out what I had to do . I ended up resorting to looking at the HTB official forum for some hints. After reading the comments I learnt that some special characters would make the application do something unexpected. Thus I wrote a python script to try bruteforcing special characters.
 
 ![Untitled](/assets/images/codify/19.png)
 
@@ -150,7 +181,7 @@ Looking at PSPY on another terminal we can see the root password
 
 ![Untitled](/assets/images/codify/21.png)
 
-## **Beyond Root**
+## Beyond Root
 
 After rooting the box I did some digging as to why the * character would be accepted as a password. Looking at the GNU documentation it says that
 
