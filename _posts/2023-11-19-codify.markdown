@@ -1,6 +1,6 @@
 # Codify(HTB)
 
-![Untitled](Codify(HTB)/assets/images/codify/23.png)
+![Untitled](/assets/images/codify/23.png)
 
 ## NMAP
 
@@ -37,7 +37,7 @@ PORT     STATE SERVICE    VERSION
 
 ## Recon
 
-![Untitled](Codify(HTB)/assets/images/codify/1.png)
+![Untitled](/assets/images/codify/1.png)
 
 We get greeted by this page when we navigate to codify.htb (both port 80 and 3000)
 
@@ -56,38 +56,38 @@ However we see that from the description the code that we run are in a sandboxed
 
 The following libraries are disallowed
 
-![Untitled](Codify(HTB)/assets/images/codify/2.png)
+![Untitled](/assets/images/codify/2.png)
 
 Knowing that a sandbox is used I wanted to figure out what sandboxing library is being used, as I believe a sandbox escape will most likely be needed here. Thus when we navigate to the about us page we see
 
-![Untitled](Codify(HTB)/assets/images/codify/3.png)
+![Untitled](/assets/images/codify/3.png)
 
 > The vm2 library is a widely used and trusted tool for sandboxing JavaScript. It adds an extra layer of security to prevent potentially harmful code from causing harm to your system. We take the security and reliability of our platform seriously, and we use vm2 to ensure a safe testing environment for your code.
 > 
 
 If we click on the link we get directed to the github page of the vm2 library which has a bright red disclaimer.
 
-![Untitled](Codify(HTB)/assets/images/codify/4.png)
+![Untitled](/assets/images/codify/4.png)
 
 if we go to the security page of the github repository we can see a critical sandbox escape vulnerability. 
 
-![Untitled](Codify(HTB)/assets/images/codify/5.png)
+![Untitled](/assets/images/codify/5.png)
 
 The POC for this exploit
 
-![Untitled](Codify(HTB)/assets/images/codify/6.png)
+![Untitled](/assets/images/codify/6.png)
 
 ## Exploit
 
 If we just copy the POC to the code editor on codify.htb we’ll get RCE
 
-![Untitled](Codify(HTB)/assets/images/codify/7.png)
+![Untitled](/assets/images/codify/7.png)
 
 There we go,we get a reverse shell as the svc user. The svc user doesn’t actually have the user flag so that would mean we still need to pivot to a different user for the user flag. Therefore I started doing my usual enumeration. First I looked at the /var/www directory.
 
-![Untitled](Codify(HTB)/assets/images/codify/8.png)
+![Untitled](/assets/images/codify/8.png)
 
-![Untitled](Codify(HTB)/assets/images/codify/9.png)
+![Untitled](/assets/images/codify/9.png)
 
 Looking at the /var/www directory we find 3 directories 
 
@@ -97,15 +97,15 @@ Looking at the /var/www directory we find 3 directories
 
 The html directory is nothing of interest and the editor directory is the website we just exploited. Howver, the contact site is a different website that has a db file that would be of interest to us. Looking at the index.js 
 
-![Untitled](Codify(HTB)/assets/images/codify/10.png)
+![Untitled](/assets/images/codify/10.png)
 
 We see that its another express/node js application that creates a **“tickets.db”** sqlite database file with the username and password of users. Since this web application is supposed to be on port 3001, I checked for the open ports on the box to see if it is running.
 
-![Untitled](Codify(HTB)/assets/images/codify/11.png)
+![Untitled](/assets/images/codify/11.png)
 
 We see that port 3001 is not opened therefore we most likely won’t need to exploit this website. Then I looked at the **“tickets.db”** file.
 
-![Untitled](Codify(HTB)/assets/images/codify/12.png)
+![Untitled](/assets/images/codify/12.png)
 
 Looking at the **“tickets.db”** database file we find the password hash for the user “joshua”.
 
@@ -114,17 +114,17 @@ Looking at the **“tickets.db”** database file we find the password hash for 
 
 looking at the /etc/passwd of the box we can see that  joshua is also a user on the box.
 
-![Untitled](Codify(HTB)/assets/images/codify/13.png)
+![Untitled](/assets/images/codify/13.png)
 
 The hash looks like a bcrypt hash so lets pass it into hashcat. When I was doing the box I thought it was a bcrypt(sha512) hash since the hash starts with $2a$12.
 
-![Untitled](Codify(HTB)/assets/images/codify/14.png)
+![Untitled](/assets/images/codify/14.png)
 
 Turns out its just a basic bcrypt(blowfish) hash 🤷‍♂️
 
-![Untitled](Codify(HTB)/assets/images/codify/15.png)
+![Untitled](/assets/images/codify/15.png)
 
-![Untitled](Codify(HTB)/assets/images/codify/16.png)
+![Untitled](/assets/images/codify/16.png)
 
 Now that we have joshua’s password we can ssh into the box as joshua and get the user flag. 
 
@@ -132,23 +132,23 @@ Now that we have joshua’s password we can ssh into the box as joshua and get t
 
 Running sudo -l as joshua shows that we can run a [mysql-backup.sh](http://mysql-backup.sh) script at /opt/scripts.
 
-![Untitled](Codify(HTB)/assets/images/codify/17.png)
+![Untitled](/assets/images/codify/17.png)
 
 The script looks like this.
 
-![Untitled](Codify(HTB)/assets/images/codify/18.png)
+![Untitled](/assets/images/codify/18.png)
 
 This is a simple bash script that if the correct password is provided will backup all the databases in mysql to the /var/backups/mysql. When I was doing the box I actually struggled a lot with exploiting this script. I couldn’t quite figure out what I had to do . I ended up resorting to looking at the HTB official forum for some hints. After reading the comments I learnt that some special characters would make the application do something unexpected. Thus I wrote a python script to try bruteforcing special characters.
 
-![Untitled](Codify(HTB)/assets/images/codify/19.png)
+![Untitled](/assets/images/codify/19.png)
 
 Running the python script we find that the * character will be accepted as a password for the script
 
-![Untitled](Codify(HTB)/assets/images/codify/20.png)
+![Untitled](/assets/images/codify/20.png)
 
 Looking at PSPY on another terminal we can see the root password
 
-![Untitled](Codify(HTB)/assets/images/codify/21.png)
+![Untitled](/assets/images/codify/21.png)
 
 ## **Beyond Root**
 
@@ -159,7 +159,7 @@ After rooting the box I did some digging as to why the * character would be acce
 
 And what is a pattern?
 
-![Untitled](Codify(HTB)/assets/images/codify/22.png)
+![Untitled](/assets/images/codify/22.png)
 
 Since * Matches any string when we input the * character the $USER_PASS variable will always be evaluate to T**rue** when compared to the $DB_PASS string. (?????????????????????) 21 question marks will also work in this case if we know that the password is 21 character long or we could bruteforce it.
 
