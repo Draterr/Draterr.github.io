@@ -87,6 +87,8 @@ Seems like its trying to include the products.php page. Since we know that in th
 
 There we go! We get the index.php file for the main website. This proves our theory of the include function being vulnerable. But we already have a way of getting any file we want on the box so what can we do with the LFI? Well while digging through the source code I also found a SQL injection.
 
+###SQL Injection
+
 ![Untitled](/assets/images/zipping/10.png)
 
 We see some comments that were left by the developers. *“Prepare statement and execute, but does not prevent SQL injection”.* OK so we have a SQL injection but there is one caveat.The SQL statement is behind a preg_match function. So in order to get the SQL injection we would need to bypass the preg_match. A quick google search showed another hacktricks page that showed a technique to bypass preg_match.
