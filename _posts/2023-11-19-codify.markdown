@@ -46,7 +46,7 @@ We get greeted by this page when we navigate to codify.htb (both port 80 and 300
 
 From the description of the site my initial guess was that this would be a RCE through node js . Coincidentally I had read about a RCE via node js template area at that time so I started exploring the website with that in mind.
 
-> RCE via node js template area[https://twitter.com/ynsmroztas/status/1717905620001521773](https://twitter.com/ynsmroztas/status/1717905620001521773)
+> RCE via node js template area[https://twitter.com/ynsmroztas/status/1717905620001521773](https://twitter.com/ynsmroztas/status/1717905620001521773){:target="_blank"}
 > 
 
 However we see that from the description the code that are ran are in a sandboxed environment.
