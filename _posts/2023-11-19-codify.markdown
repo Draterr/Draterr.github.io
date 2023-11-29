@@ -56,7 +56,7 @@ However we see that from the description the code that are ran are in a sandboxe
 
 The following libraries are disallowed
 
-![Untitled](/assets/images/codify/2.png)
+![Untitled](/assets/images/codify/2.png){:width=500,height=500}
 
 Knowing that a sandbox is used I wanted to figure out what sandboxing library is being used, as I believe a sandbox escape will most likely be needed here. Thus when we navigate to the about us page we see
 
