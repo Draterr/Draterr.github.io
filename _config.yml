@@ -106,8 +106,8 @@ analytics:
 author:
   name             : "Drater"
   avatar           : "/assets/images/pic.jpg"
-  bio              : "My Name is Poon Chun Lok aka Ben/Drater from Hong Kong. I post about walkthroughs of security Capture the flags challenges! enjoy :)"
-    #location         : "earth"
+  bio              : "My Name is Poon Chun Lok aka Ben/Drater. I post about walkthroughs of security Capture the flags challenges! enjoy :)"
+    location         : "Hong Kong"
   email            :
   links:
     - label: "Website"
