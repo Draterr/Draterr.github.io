@@ -106,16 +106,16 @@ analytics:
 author:
   name             : "Drater"
   avatar           : "/assets/images/pic.jpg"
-  bio              : "Drater."
+  bio              : "My Name is Poon Chun Lok aka Ben/Drater from Hong Kong. I post about walkthroughs of security Capture the flags challenges! enjoy :)"
     #location         : "earth"
   email            :
   links:
     - label: "Website"
       icon: "fas fa-fw fa-link"
       # url: "https://your-website.com"
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      url: "https://twitter.com/DraterCS"
+      #- label: "Twitter"
+      #icon: "fab fa-fw fa-twitter-square"
+      #url: "https://twitter.com/DraterCS"
     - label: "Github"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/draterr"
@@ -123,9 +123,9 @@ author:
 # site footer
 footer:
   links:
-    - label: "twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      url: "https://twitter.com/DraterCS"
+    #- label: "twitter"
+    #icon: "fab fa-fw fa-twitter-square"
+    #url: "https://twitter.com/DraterCS"
     - label: "github"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Draterr"
