@@ -179,8 +179,8 @@ Then we compile it into a shared object file to be called by the stock program
 Now we just have to get this file on the box at /home/rektsu/.config/ and run the program with sudo and we will be root.
 
 ![Untitled](/assets/images/zipping/24.png)
-##References
-[https://book.hacktricks.xyz/pentesting-web/file-upload#zip-tar-file-automatically-decompressed-upload]
-[https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/]
-[https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/php-tricks-esp#preg_match]
+## References
+> [https://book.hacktricks.xyz/pentesting-web/file-upload#zip-tar-file-automatically-decompressed-upload]
+> [https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/]
+> [https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/php-tricks-esp#preg_match]
 
