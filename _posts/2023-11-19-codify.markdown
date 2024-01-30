@@ -203,5 +203,5 @@ else
 fi
 ```
 ## References
-> [https://twitter.com/ynsmroztas/status/1717905620001521773]
-> [https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html]
+> [https://twitter.com/ynsmroztas/status/1717905620001521773](nodejs RCE)
+> [https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html)

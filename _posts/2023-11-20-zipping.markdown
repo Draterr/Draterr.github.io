@@ -180,7 +180,7 @@ Now we just have to get this file on the box at /home/rektsu/.config/ and run th
 
 ![Untitled](/assets/images/zipping/24.png)
 ## References
-> [https://book.hacktricks.xyz/pentesting-web/file-upload#zip-tar-file-automatically-decompressed-upload]
-> [https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/]
-> [https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/php-tricks-esp#preg_match]
+> [https://book.hacktricks.xyz/pentesting-web/file-upload#zip-tar-file-automatically-decompressed-upload](https://book.hacktricks.xyz/pentesting-web/file-upload#zip-tar-file-automatically-decompressed-upload)
+> [https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/](https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/)
+> [https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/php-tricks-esp#preg_match](https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/php-tricks-esp#preg_match)
 
