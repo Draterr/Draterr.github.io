@@ -31,7 +31,7 @@ This website seems to be some sort of Hosting Provider. Hovering over all the bu
 
 ![Untitled](/assets/images/cozyhosting/2.png)
 
-Looking at the results we see a few interesting endpoints. `/admin` leads to a 401 and `/error` leads to a 505. Let’s navigate to `/error` to checkout the error page and see if it will reveal the framework that is being used. 
+Looking at the results we see a few interesting endpoints. `/admin` leads to a 401 and `/error` leads to a 500. Let’s navigate to `/error` to checkout the error page and see if it will reveal the framework that is being used. 
 
 ![Untitled](/assets/images/cozyhosting/3.png)
 
