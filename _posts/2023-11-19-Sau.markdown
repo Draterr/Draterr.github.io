@@ -1,5 +1,6 @@
 # Sau(HTB)
 
+This was an easy machine on HackTheBox, we first exploit a SSRF to hit a local port running Maltrail. We find that therunning Maltrail instance has a command injection CVE that gets us on the box. The privilege escalation involved abusing a flaw in systemctl that elevates the pager that is being used to read the systemctl output, allowing us to spawn a shell as root.
 ![Untitled](/assets/images/sau/0.png)
 
 # NMAP

@@ -1,5 +1,6 @@
 # Codify(HTB)
 
+Codify was an easy machine on HackTheBox, we first perform a sandbox escape to get RCE on the box and get user. Privilege escalation utiltized a wildcard trick to provide us the root password from a bash script.
 ![Untitled](/assets/images/codify/23.png)
 
 ## NMAP

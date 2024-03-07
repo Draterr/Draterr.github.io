@@ -1,5 +1,6 @@
 ## Cozyhosting(HTB)
 
+This was an easy machine on HackThe Box, it involved exploting a session hijacking from leaked sessions then finding the postgres database creds and decrypting the password hash in the database to get acess to the "josh" user. Privilege Escalation was as simple as a gtfo bin. 
 ![Untitled](/assets/images/cozyhosting/0.png)
 
 ## NMAP

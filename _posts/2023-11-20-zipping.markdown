@@ -1,5 +1,6 @@
 # Zipping(HTB)
 
+Zipping was a medium machine on HackTheBox, it involved finding a zip symlink vulnerability that allowed us to pull the source code of the website. In the source code we will discover a SQL injection in the /shop page as well as a Local File Inclusion vulnerability which we could use in tandem with the SQL injection to get a webshell on the box. Once we are on the box we will exploit a shared object hijacking vulnerability to escalate to root.
 ![Untitled](/assets/images/zipping/25.png)
 
 ## NMAP
