@@ -73,7 +73,7 @@ Let’s open up Burp and look at the request that is made when we use this funct
 
 ![Untitled](/assets/images/cozyhosting/11.png)
 
-We can see that a POST request gets sent to the endpoint `/executessh` and it takes two parameters host and username. From here I pretty much was sure that a shell command was being executed in the backend. The command would probably look something like
+We can see that a POST request gets sent to the endpoint `/executessh` and it takes two parameters host and username. From here I was pretty confiden that a shell command was being executed in the backend. The command would probably look something like
 
 ![Untitled](/assets/images/cozyhosting/12.png)
 
